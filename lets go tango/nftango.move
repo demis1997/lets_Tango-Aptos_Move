@@ -118,12 +118,12 @@ module overmind::nftango {
                                                collection_name: vector<String>,
                                                token_name: vector<String>,
                                                property_version: vector<u64>) {
- assert(
-        creator.len() == collection_name.len() &&
-        creator.len() == token_name.len() &&
-        creator.len() == property_version.len(),
-        ERROR_VECTOR_LENGTHS_NOT_EQUAL
-    );
+            assert(
+                    creator.len() == collection_name.len() &&
+                    creator.len() == token_name.len() &&
+                    creator.len() == property_version.len(),
+                    ERROR_VECTOR_LENGTHS_NOT_EQUAL
+                );
     
 
     //
@@ -160,16 +160,16 @@ module overmind::nftango {
     public entry fun cancel_game(
         account: &signer,
     ) acquires NFTangoStore {
-assert_nftango_store_exists(account.to_address());
-    let mut store = NFTangoStore::load(&account.to_address().to_string());
-    assert_nftango_store_is_active(&store);
-    assert_nftango_store_does_not_have_an_opponent(&store);
-    let direct_transfer_id = *DIRECT_TRANSFER_ID;
-    token::opt_in(&direct_transfer_id);
-    token::transfer(&store.resource_token_id, &account.to_address(), 1);
-    store.active = false;
-    store.save(&account.to_address().to_string());
-    }
+            assert_nftango_store_exists(account.to_address());
+                let mut store = NFTangoStore::load(&account.to_address().to_string());
+                assert_nftango_store_is_active(&store);
+                assert_nftango_store_does_not_have_an_opponent(&store);
+                let direct_transfer_id = *DIRECT_TRANSFER_ID;
+                token::opt_in(&direct_transfer_id);
+                token::transfer(&store.resource_token_id, &account.to_address(), 1);
+                store.active = false;
+                store.save(&account.to_address().to_string());
+                }
 
     public fun join_game(
         account: &signer,
@@ -179,15 +179,15 @@ assert_nftango_store_exists(account.to_address());
         token_names: vector<String>,
         property_versions: vector<u64>,
     ) acquires NFTangoStore {
- assert_vector_lengths_are_equal(&creators, &collection_names, &token_names, &property_versions);
-    let mut token_ids: vector<TokenId> = vector_init(creators.len(), TokenId::default());
-    for i in 0..creators.len() {
-        let resource_account = Signer::address_from_program_seed(
-            &["NFTangoStore", game_address.to_str(), "Resource"].join("_")
-        );
-        let token_id = token::create_token_id_raw(&resource_account, &[], &[]).unwrap();
-        token_ids.push(token_id);
-    }
+        assert_vector_lengths_are_equal(&creators, &collection_names, &token_names, &property_versions);
+            let mut token_ids: vector<TokenId> = vector_init(creators.len(), TokenId::default());
+            for i in 0..creators.len() {
+                let resource_account = Signer::address_from_program_seed(
+                    &["NFTangoStore", game_address.to_str(), "Resource"].join("_")
+                );
+                let token_id = token::create_token_id_raw(&resource_account, &[], &[]).unwrap();
+                token_ids.push(token_id);
+            }
     let mut store = NFTangoStore::load(&game_address.to_string());
         assert_nftango_store_is_active(&store);
         assert_nftango_store_does_not_have_an_opponent(&store);
